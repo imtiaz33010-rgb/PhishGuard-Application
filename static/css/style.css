@@ -1,0 +1,260 @@
+
+/* =========================================================
+   PHISHGUARD — LIVE WEBSITE SCREENSHOT PREVIEW
+   Append this block to the bottom of style.css
+   ========================================================= */
+
+.website-preview-section {
+    width: 100%;
+    margin-top: 22px;
+    padding: 18px;
+
+    border: 1px solid #dce5ef;
+    border-radius: 13px;
+
+    background: #fff;
+    box-shadow: 0 7px 22px rgba(17, 38, 67, .035);
+
+    text-align: left;
+}
+
+.website-preview-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    margin-bottom: 14px;
+}
+
+.website-preview-heading h3 {
+    color: #172b45;
+    font-size: 14px;
+    font-weight: 850;
+}
+
+.website-preview-heading p {
+    margin-top: 4px;
+    color: #718198;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.preview-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    max-width: 100%;
+    padding: 6px 10px;
+
+    border: 1px solid #dce5ef;
+    border-radius: 999px;
+
+    background: #f5f8fc;
+    color: #536880;
+
+    font-size: 10px;
+    font-weight: 750;
+    overflow-wrap: anywhere;
+}
+
+.preview-status::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    flex: 0 0 auto;
+
+    border-radius: 50%;
+    background: #94a3b8;
+}
+
+.website-preview-card {
+    overflow: hidden;
+
+    border: 1px solid #d9e2ed;
+    border-radius: 11px;
+
+    background: #f4f7fb;
+}
+
+.preview-browser-bar {
+    display: flex;
+    min-height: 43px;
+    align-items: center;
+    gap: 12px;
+
+    padding: 8px 12px;
+
+    border-bottom: 1px solid #dce5ef;
+    background: #fff;
+}
+
+.preview-browser-dots {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 5px;
+}
+
+.preview-browser-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #cbd5e1;
+}
+
+.preview-browser-dots span:nth-child(1) {
+    background: #f28b82;
+}
+
+.preview-browser-dots span:nth-child(2) {
+    background: #fbbc4b;
+}
+
+.preview-browser-dots span:nth-child(3) {
+    background: #81c995;
+}
+
+.preview-domain {
+    min-width: 0;
+    overflow: hidden;
+
+    padding: 5px 10px;
+    border: 1px solid #e5ebf3;
+    border-radius: 6px;
+
+    background: #f7f9fc;
+    color: #52657b;
+
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.website-preview-placeholder {
+    display: flex;
+    min-height: 230px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+
+    padding: 25px;
+
+    color: #718198;
+    background:
+        linear-gradient(135deg, #f7f9fc, #edf3fa);
+
+    font-size: 12px;
+    line-height: 1.7;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.preview-placeholder-icon {
+    display: grid;
+    width: 48px;
+    height: 48px;
+    place-items: center;
+
+    border: 1px solid #dbe7fb;
+    border-radius: 13px;
+
+    background: #eaf2ff;
+    color: #2866ce;
+
+    font-size: 22px;
+}
+
+.website-screenshot {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-height: 160px;
+    max-height: 560px;
+
+    object-fit: contain;
+    object-position: top center;
+
+    background: #fff;
+}
+
+.website-preview-meta {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: 12px;
+
+    padding: 14px;
+
+    border-top: 1px solid #e2e9f2;
+    background: #fff;
+}
+
+.preview-meta-item {
+    min-width: 0;
+}
+
+.preview-meta-label {
+    display: block;
+    margin-bottom: 5px;
+
+    color: #8190a2;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.preview-meta-value {
+    display: block;
+    color: #344b65;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.preview-safety-note {
+    margin-top: 12px;
+    padding: 10px 12px;
+
+    border: 1px solid #f0dfb8;
+    border-radius: 8px;
+
+    background: #fffaf0;
+    color: #80612d;
+
+    font-size: 10px;
+    line-height: 1.7;
+}
+
+/* Mobile preview adjustments */
+@media (max-width: 560px) {
+    .website-preview-section {
+        margin-top: 16px;
+        padding: 12px;
+    }
+
+    .website-preview-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .website-preview-placeholder {
+        min-height: 170px;
+        padding: 18px;
+    }
+
+    .website-preview-meta {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .website-screenshot {
+        min-height: 120px;
+        max-height: 380px;
+    }
+}

@@ -1,0 +1,192 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sign in | PhishGuard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: #eef4ff;
+            background: radial-gradient(
+                circle at top left,
+                #123b50,
+                #070b14 55%
+            );
+        }
+
+        .card {
+            width: 100%;
+            max-width: 420px;
+            padding: 36px 28px;
+            text-align: center;
+            background: #0d1726;
+            border: 1px solid #26394c;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px #0005;
+        }
+
+        .logo {
+            font-size: 42px;
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        p {
+            color: #a9b9ca;
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .google {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #d9dce0;
+            border-radius: 9px;
+            background: #ffffff;
+            color: #202124;
+            font-weight: 600;
+            font-size: 15px;
+            text-decoration: none;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+
+        .google:hover {
+            background: #eaf0f6;
+            transform: translateY(-1px);
+        }
+
+        .google:focus-visible,
+        .back:focus-visible {
+            outline: 3px solid #42d8e9;
+            outline-offset: 4px;
+        }
+
+        .google img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 24px;
+            color: #42d8e9;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back:hover {
+            text-decoration: underline;
+        }
+
+        .error {
+            color: #ffb9c4;
+            background: #321a25;
+            border: 1px solid #773e4a;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            overflow-wrap: anywhere;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .security-note {
+            margin-top: 20px;
+            margin-bottom: 0;
+            font-size: 12px;
+            color: #8498ad;
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 30px 22px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="card">
+        <div class="logo" aria-hidden="true">🛡️</div>
+
+        <h1>PhishGuard</h1>
+
+        <p>Intelligent phishing website detection</p>
+
+        <h2>Welcome back</h2>
+
+        <p>
+            Sign in with Google to access the website inspection dashboard.
+        </p>
+
+        {% if error %}
+            <div class="error" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        {% if session.get('user') %}
+            <p>
+                You are already signed in as
+                {{ session.get('user', {}).get('name', 'User') }}.
+            </p>
+
+            <a class="google" href="{{ url_for('home') }}">
+                Continue to PhishGuard
+            </a>
+
+            <a class="back" href="{{ url_for('logout') }}">
+                Sign out
+            </a>
+        {% else %}
+            <a class="google" href="{{ url_for('auth_google') }}">
+                <img
+                    src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                    alt=""
+                >
+                Sign in with Google
+            </a>
+
+            <a class="back" href="{{ url_for('home') }}">
+                &#8592; Back to Home
+            </a>
+        {% endif %}
+
+        <p class="security-note">
+            Secure sign-in powered by Google OAuth.
+        </p>
+    </main>
+</body>
+</html>

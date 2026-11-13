@@ -1,0 +1,872 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#070b14">
+
+    <title>PhishGuard | Phishing Website Detection</title>
+    <meta name="description"
+          content="PhishGuard is a machine-learning-based research project designed to help identify potentially fraudulent websites.">
+
+    <link rel="icon"
+          href="{{ url_for('static', filename='img/favicon.png') }}"
+          type="image/png">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        :root {
+            --bg: #070b14;
+            --panel: #101827;
+            --text: #eef4ff;
+            --muted: #9aa9bf;
+            --border: #29364b;
+            --blue: #5487ff;
+            --cyan: #4bd6e8;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 90px;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+            background: rgba(7, 11, 20, 0.97);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .navbar {
+            width: min(1180px, 92%);
+            min-height: 76px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            font-size: 23px;
+            font-weight: 800;
+            letter-spacing: -0.7px;
+            white-space: nowrap;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            border-radius: 13px;
+            background: linear-gradient(135deg, var(--blue), var(--cyan));
+            color: #07101e;
+            font-size: 16px;
+            font-weight: 900;
+        }
+
+        .brand-highlight {
+            color: var(--cyan);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 25px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .nav-links > a:not(.nav-login):hover {
+            color: var(--text);
+        }
+
+        .welcome-user {
+            color: var(--cyan);
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .nav-login {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 11px 20px;
+            border: 1px solid var(--blue);
+            border-radius: 9px;
+            background: var(--blue);
+            color: white !important;
+            font-weight: 700;
+            white-space: nowrap;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .nav-login:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            padding: 90px 0 85px;
+            background:
+                radial-gradient(
+                    ellipse at 80% 25%,
+                    rgba(55, 108, 255, 0.16),
+                    transparent 43%
+                ),
+                radial-gradient(
+                    ellipse at 10% 85%,
+                    rgba(45, 207, 224, 0.08),
+                    transparent 42%
+                ),
+                var(--bg);
+        }
+
+        .hero-inner {
+            width: min(1180px, 92%);
+            margin: auto;
+            display: grid;
+            grid-template-columns: 1.08fr 0.92fr;
+            align-items: center;
+            gap: 54px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 8px 12px;
+            border: 1px solid #30476b;
+            border-radius: 30px;
+            background: rgba(27, 47, 78, 0.42);
+            color: #a9c5ff;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.3px;
+        }
+
+        .eyebrow-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--cyan);
+            box-shadow: 0 0 12px var(--cyan);
+        }
+
+        h1 {
+            margin: 23px 0 18px;
+            max-width: 690px;
+            font-size: clamp(39px, 5.2vw, 66px);
+            line-height: 1.09;
+            letter-spacing: -2.8px;
+        }
+
+        .gradient-text {
+            color: var(--cyan);
+            background: linear-gradient(90deg, #68a0ff, #4bd6e8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-description {
+            max-width: 590px;
+            color: var(--muted);
+            font-size: 16px;
+            line-height: 1.85;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 13px;
+            margin-top: 30px;
+        }
+
+        .primary-button,
+        .secondary-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
+            padding: 13px 21px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 800;
+            transition: transform 0.2s, opacity 0.2s;
+            text-align: center;
+        }
+
+        .primary-button {
+            background: linear-gradient(135deg, var(--blue), #3970e8);
+            color: white;
+        }
+
+        .secondary-button {
+            border: 1px solid #34435c;
+            background: #111a2a;
+            color: var(--text);
+        }
+
+        .primary-button:hover,
+        .secondary-button:hover {
+            transform: translateY(-2px);
+            opacity: 0.92;
+        }
+
+        .hero-note {
+            margin-top: 17px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .hero-visual {
+            min-width: 0;
+        }
+
+        .hero-image-frame {
+            overflow: hidden;
+            padding: 12px;
+            border: 1px solid #293d5d;
+            border-radius: 24px;
+            background: linear-gradient(145deg, #182741, #0d1421);
+            box-shadow: 0 25px 75px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-image {
+            display: block;
+            width: 100%;
+            max-height: 390px;
+            object-fit: contain;
+            border-radius: 15px;
+        }
+
+        .visual-caption {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 17px 7px 6px;
+        }
+
+        .visual-caption-icon {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            flex-shrink: 0;
+            place-items: center;
+            border-radius: 12px;
+            background: #193d3c;
+            color: var(--cyan);
+            font-size: 21px;
+        }
+
+        .visual-caption strong {
+            display: block;
+            font-size: 14px;
+        }
+
+        .visual-caption p {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: min(1180px, 92%);
+            margin: auto;
+        }
+
+        .about {
+            padding: 82px 0;
+            border-top: 1px solid #1d293b;
+            background: #0a101b;
+        }
+
+        .section-heading {
+            max-width: 720px;
+            margin: 0 auto 38px;
+            text-align: center;
+        }
+
+        .section-label {
+            color: var(--cyan);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.6px;
+        }
+
+        .section-heading h2 {
+            margin: 12px 0;
+            font-size: clamp(28px, 4vw, 40px);
+            letter-spacing: -1px;
+        }
+
+        .section-heading p {
+            margin: auto;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.9;
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+
+        .about-card {
+            padding: 27px;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            background: var(--panel);
+        }
+
+        .about-card-icon {
+            width: 46px;
+            height: 46px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: #1b2d4a;
+            color: var(--cyan);
+            font-size: 22px;
+        }
+
+        .about-card h3 {
+            margin: 18px 0 10px;
+            font-size: 18px;
+        }
+
+        .about-card p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.9;
+        }
+
+        .model-list {
+            display: grid;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .model-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border: 1px solid #29364b;
+            border-radius: 10px;
+            background: #0c1421;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .model-dot {
+            width: 8px;
+            height: 8px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            background: var(--cyan);
+        }
+
+        .how-it-works {
+            padding: 78px 0;
+            background: var(--bg);
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 19px;
+        }
+
+        .step-card {
+            padding: 25px;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            background: var(--panel);
+        }
+
+        .step-number {
+            color: var(--cyan);
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .step-card h3 {
+            margin: 15px 0 10px;
+            font-size: 17px;
+        }
+
+        .step-card p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.9;
+        }
+
+        .cta-section {
+            padding: 0 0 80px;
+            background: var(--bg);
+        }
+
+        .cta-panel {
+            padding: 38px 25px;
+            border: 1px solid #30476b;
+            border-radius: 18px;
+            background:
+                radial-gradient(
+                    ellipse at 90% 20%,
+                    rgba(75, 214, 232, 0.1),
+                    transparent 45%
+                ),
+                #101827;
+            text-align: center;
+        }
+
+        .cta-panel h2 {
+            margin: 0 0 12px;
+            font-size: clamp(25px, 4vw, 35px);
+        }
+
+        .cta-panel p {
+            max-width: 580px;
+            margin: 0 auto;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .cta-panel .primary-button {
+            margin-top: 22px;
+        }
+
+        .disclaimer {
+            margin-top: 28px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.8;
+            text-align: center;
+        }
+
+        .site-footer {
+            padding: 25px 0;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .footer-inner {
+            width: min(1180px, 92%);
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        @media (max-width: 800px) {
+            .hero-inner {
+                grid-template-columns: 1fr;
+                gap: 35px;
+            }
+
+            .hero {
+                padding: 60px 0;
+            }
+
+            .hero-visual {
+                max-width: 560px;
+                width: 100%;
+                margin: auto;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+            }
+
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                width: 94%;
+                min-height: 66px;
+                gap: 12px;
+            }
+
+            .brand {
+                gap: 7px;
+                font-size: 18px;
+            }
+
+            .brand-icon {
+                width: 34px;
+                height: 34px;
+                border-radius: 10px;
+                font-size: 13px;
+            }
+
+            .nav-links {
+                gap: 11px;
+                font-size: 12px;
+            }
+
+            .nav-login {
+                padding: 9px 11px;
+            }
+
+            .welcome-user {
+                max-width: 105px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                font-size: 11px;
+            }
+
+            h1 {
+                letter-spacing: -1.7px;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+            }
+
+            .hero-actions a {
+                width: 100%;
+            }
+
+            .footer-inner {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .navbar {
+                width: 96%;
+                gap: 8px;
+            }
+
+            .brand {
+                font-size: 16px;
+            }
+
+            .brand-icon {
+                width: 30px;
+                height: 30px;
+            }
+
+            .nav-links {
+                gap: 8px;
+                font-size: 11px;
+            }
+
+            .welcome-user {
+                max-width: 80px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="site-header">
+    <nav class="navbar" aria-label="Main navigation">
+
+        <a class="brand"
+           href="{{ url_for('home') }}"
+           aria-label="PhishGuard home">
+            <span class="brand-icon" aria-hidden="true">PG</span>
+            <span>Phish<span class="brand-highlight">Guard</span></span>
+        </a>
+
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('home') }}#about">About</a>
+
+            {% if session.get('user') %}
+                <span class="welcome-user">
+                    Welcome, {{ session.get('user', {}).get('name', 'User') }}
+                </span>
+
+                <a class="nav-login" href="{{ url_for('logout') }}">
+                    Logout
+                </a>
+            {% else %}
+                <a class="nav-login" href="{{ url_for('login') }}">
+                    Login
+                </a>
+            {% endif %}
+        </div>
+
+    </nav>
+</header>
+
+<main>
+
+    <section class="hero" id="home">
+        <div class="hero-inner">
+
+            <div class="hero-content">
+                <div class="eyebrow">
+                    <span class="eyebrow-dot"></span>
+                    MACHINE LEARNING SECURITY
+                </div>
+
+                <h1>
+                    Identify potential phishing websites with
+                    <span class="gradient-text">PhishGuard.</span>
+                </h1>
+
+                <p class="hero-description">
+                    PhishGuard is a machine-learning-based phishing website
+                    detection system designed to analyse website URLs and
+                    help users recognise potentially suspicious online
+                    destinations.
+                </p>
+
+                <div class="hero-actions">
+                    {% if session.get('user') %}
+                        <a class="primary-button"
+                           href="{{ url_for('inspect') }}">
+                            Inspect a Website &rarr;
+                        </a>
+                    {% else %}
+                        <a class="primary-button"
+                           href="{{ url_for('login') }}">
+                            Login to Inspect &rarr;
+                        </a>
+                    {% endif %}
+
+                    <a class="secondary-button"
+                       href="{{ url_for('home') }}#about">
+                        Learn About PhishGuard
+                    </a>
+                </div>
+
+                <p class="hero-note">
+                    Research project using three machine-learning models
+                    to analyse website URLs.
+                </p>
+            </div>
+
+            <div class="hero-visual">
+                <div class="hero-image-frame">
+                    <img
+                        class="hero-image"
+                        src="{{ url_for('static', filename='img/phishing.jpeg') }}"
+                        alt="Phishing website detection illustration"
+                        onerror="this.style.display='none'">
+
+                    <div class="visual-caption">
+                        <div class="visual-caption-icon" aria-hidden="true">
+                            &#10003;
+                        </div>
+
+                        <div>
+                            <strong>Multiple-model analysis</strong>
+                            <p>
+                                Random Forest, Logistic Regression and
+                                Multinomial Naive Bayes
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="about" id="about">
+        <div class="container">
+
+            <div class="section-heading">
+                <span class="section-label">ABOUT PHISHGUARD</span>
+                <h2>Understanding website threats</h2>
+                <p>
+                    PhishGuard explores how machine-learning techniques
+                    can help identify URLs associated with phishing.
+                    The system analyses a submitted URL and presents
+                    model predictions to support further investigation.
+                </p>
+            </div>
+
+            <div class="about-content">
+
+                <article class="about-card">
+                    <div class="about-card-icon" aria-hidden="true">
+                        &#9678;
+                    </div>
+
+                    <h3>Our Project</h3>
+                    <p>
+                        Phishing websites can imitate legitimate online
+                        services to trick people into revealing passwords,
+                        financial information or other sensitive data.
+                        PhishGuard analyses website URLs and provides
+                        predictions to help users make informed decisions.
+                        Its output is a research aid, not a guarantee that
+                        a website is safe or malicious.
+                    </p>
+                </article>
+
+                <article class="about-card">
+                    <div class="about-card-icon" aria-hidden="true">
+                        &#9672;
+                    </div>
+
+                    <h3>Machine-Learning Models</h3>
+                    <p>
+                        The project compares three models. Their individual
+                        predictions can be reviewed during website inspection.
+                    </p>
+
+                    <div class="model-list">
+                        <div class="model-item">
+                            <span class="model-dot"></span>
+                            Random Forest
+                        </div>
+
+                        <div class="model-item">
+                            <span class="model-dot"></span>
+                            Logistic Regression
+                        </div>
+
+                        <div class="model-item">
+                            <span class="model-dot"></span>
+                            Multinomial Naive Bayes
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+
+            <div class="section-heading">
+                <span class="section-label">HOW IT WORKS</span>
+                <h2>Three simple steps</h2>
+                <p>
+                    Use the inspection page to submit a URL and review
+                    the available detection results.
+                </p>
+            </div>
+
+            <div class="steps-grid">
+
+                <article class="step-card">
+                    <span class="step-number">STEP 01</span>
+                    <h3>Enter a URL</h3>
+                    <p>
+                        Open the inspection page and enter the website
+                        address you want to examine.
+                    </p>
+                </article>
+
+                <article class="step-card">
+                    <span class="step-number">STEP 02</span>
+                    <h3>Analyse the Website</h3>
+                    <p>
+                        The detection system uses its configured
+                        machine-learning models to produce predictions.
+                    </p>
+                </article>
+
+                <article class="step-card">
+                    <span class="step-number">STEP 03</span>
+                    <h3>Review the Results</h3>
+                    <p>
+                        Review the final classification and the individual
+                        model outputs. A website screenshot may also be
+                        available when capture succeeds.
+                    </p>
+                </article>
+
+            </div>
+
+            <p class="disclaimer">
+                PhishGuard is an academic research project. A legitimate
+                prediction does not guarantee safety. Avoid entering
+                sensitive information into websites you do not trust.
+            </p>
+
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-panel">
+
+                <h2>Ready to inspect a website?</h2>
+
+                <p>
+                    Open the inspection page to submit a URL and review
+                    the available machine-learning predictions.
+                </p>
+
+                {% if session.get('user') %}
+                    <a class="primary-button"
+                       href="{{ url_for('inspect') }}">
+                        Inspect Website &rarr;
+                    </a>
+                {% else %}
+                    <a class="primary-button"
+                       href="{{ url_for('login') }}">
+                        Login to Inspect Website &rarr;
+                    </a>
+                {% endif %}
+
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="site-footer">
+    <div class="footer-inner">
+        <span>&copy; 2026 PhishGuard. Academic research project.</span>
+        <span>Machine-learning-assisted phishing detection</span>
+    </div>
+</footer>
+
+</body>
+</html>

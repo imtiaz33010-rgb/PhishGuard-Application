@@ -1,0 +1,50 @@
+ID,Test,Expected,Actual,Result,Note
+M1,empty url,400,400,Pass,0.01s
+M2,whitespace only,400,400,Pass,0.01s
+M3,scheme only,400,400,Pass,0.05s
+M4,javascript: scheme,400,400,Pass,0.01s
+M5,ftp scheme,400,400,Pass,0.01s
+M6,file scheme,400,400,Pass,0.02s
+M7,bad port (99999),400,400,Pass,0.01s
+M8,non-numeric port,400,400,Pass,0.01s
+M9,space in host,200/400,200,Pass,3.48s
+M10,null byte,200/400,200,Pass,3.73s
+M11,cyrillic look-alike,200/400,200,Pass,6.02s
+M12,punycode host,200/400,200,Pass,8.24s
+M13,script injection,200/400,200,Pass,4.75s
+M14,SQL-style string,200/400,200,Pass,3.14s
+P1,missing url field,400,400,Pass,0.01s
+P2,url is a number,400,400,Pass,0.02s
+P3,url is null,400,400,Pass,0.01s
+P4,url is a list,400,400,Pass,0.01s
+L1,"2,000-char URL",200/400/413,200,Pass,3.14s
+L2,"10,000-char URL",200/400/413,400,Pass,0.04s
+L3,"100,000-char URL",200/400/413,400,Pass,0.02s
+L4,"1,000,000-char URL",200/400/413,400,Pass,0.08s
+P5,invalid JSON,400,400,Pass,0.04s
+P6,empty body,400,400,Pass,0.03s
+P7,wrong content-type,400/415,400,Pass,0.02s
+P8,GET on POST-only route,405,405,Pass,0.02s
+S1,http://127.0.0.1:5000/health,blocked (400),400,Pass,"{""error"":""This URL is invalid or its destination is not publicly accessible.""} "
+S2,http://localhost:5000/,blocked (400),400,Pass,"{""error"":""This URL is invalid or its destination is not publicly accessible.""} "
+S3,http://[::1]:5000/,blocked (400),400,Pass,"{""error"":""This URL is invalid or its destination is not publicly accessible.""} "
+S4,http://0.0.0.0:5000/,blocked (400),400,Pass,"{""error"":""This URL is invalid or its destination is not publicly accessible.""} "
+S5,http://2130706433:5000/health,blocked (400),400,Pass,"{""error"":""This URL is invalid or its destination is not publicly accessible.""} "
+S6,http://0x7f000001:5000/health,blocked (400),400,Pass,"{""error"":""This URL is invalid or its destination is not publicly accessible.""} "
+S7,http://127.1:5000/health,blocked (400),400,Pass,"{""error"":""This URL is invalid or its destination is not publicly accessible.""} "
+S8,http://169.254.169.254/latest/meta-data/,blocked (400),400,Pass,"{""error"":""This URL is invalid or its destination is not publicly accessible.""} "
+S9,http://10.0.0.1/,blocked (400),400,Pass,"{""error"":""This URL is invalid or its destination is not publicly accessible.""} "
+S10,http://192.168.1.1/,blocked (400),400,Pass,"{""error"":""This URL is invalid or its destination is not publicly accessible.""} "
+S11,http://172.16.0.1/,blocked (400),400,Pass,"{""error"":""This URL is invalid or its destination is not publicly accessible.""} "
+S12,http://user:pass@8.8.8.8/,blocked (400),400,Pass,"{""error"":""This URL is invalid or its destination is not publicly accessible.""} "
+S13,file:///C:/Windows/win.ini,blocked (400),400,Pass,"{""error"":""Only HTTP and HTTPS website URLs are supported.""} "
+S14,http://localtest.me:5000/health,blocked (400),400,Pass,"{""error"":""This URL is invalid or its destination is not publicly accessible.""} "
+S15,https://httpbin.org/redirect-to?url=http://127.0.0.1:8000/s15,no request reaches private address,HTTP 200; listener hits: 0,Pass,5.20s
+S16,https://httpbingo.org/redirect-to?url=http://localhost:8000/s16,no request reaches private address,HTTP 200; listener hits: 0,Pass,4.21s
+S0,control: public site allowed,allowed (200),200,Pass,4.08s
+A1,/login (record behaviour),no 500,200,Pass,0.02s
+A2,callback with forged state,rejected (400/401/403),400,Pass,0.02s
+A3,callback with no parameters,rejected (400/401/403),400,Pass,0.01s
+A4,callback user denied consent,no 500,302,Pass,0.01s
+A5,Werkzeug debug console exposed,404,404,Pass,0.02s
+A6,404 page leaks no trace,"404, no traceback",404,Pass,0.01s

@@ -1,0 +1,4 @@
+Model,Accuracy (%),ROC-AUC
+Random Forest,91.6595,0.9771
+Logistic Regression,93.1248,0.9808
+Multinomial Naive Bayes,90.4306,0.9744
