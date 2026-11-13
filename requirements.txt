@@ -1,0 +1,22 @@
+# Web framework and configuration
+Flask
+python-dotenv
+
+# Google OAuth login
+Authlib
+requests
+
+# Website screenshot preview
+playwright
+
+# Machine learning
+numpy
+scipy
+pandas
+scikit-learn==1.6.1
+joblib
+
+# URL and live-website analysis
+beautifulsoup4
+tldextract
+dnspython
